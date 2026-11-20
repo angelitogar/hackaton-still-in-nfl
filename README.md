@@ -31,6 +31,10 @@ cd dashboard && npm run dev
 
 Abre la dirección `localhost` que muestra Vite. Verificación del entorno: `sh .hackathon/setup.sh --check`.
 
+**Datos de demostración o API real.** Mientras el backend no implemente los endpoints de `docs/CONTRATO_API.md`, el dashboard usa datos de ejemplo con la forma exacta del contrato y lo avisa con un banner. Para usar la API real: `VITE_USE_MOCKS=false npm run dev` (con Uvicorn en el puerto 8000; Vite reenvía `/api`).
+
+Validación del frontend: `npm run typecheck` y `npm run build` dentro de `dashboard/`.
+
 ## Stack
 
 Python 3.12 · FastAPI · pandas · React 18 · Vite · TypeScript · Tailwind 3 · Recharts
