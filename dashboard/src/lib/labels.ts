@@ -21,7 +21,7 @@ const BUCKET_LABELS: Partial<Record<Dimension, Record<string, string>>> = {
   quarter: { '1': 'Cuarto 1', '2': 'Cuarto 2', '3': 'Cuarto 3', '4': 'Cuarto 4', '5': 'Cuarto 5' },
   clockWindow: {
     q4Last5: 'Cuarto 4, últimos 5 min',
-    q4Full: 'Cuarto 4 completo',
+    q4Full: 'Cuarto 4, antes de los últimos 5 min',
     rest: 'Resto del juego',
   },
   fieldZone: {

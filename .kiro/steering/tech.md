@@ -26,32 +26,32 @@ No se agregan dependencias ni se cambian versiones sin aprobación. No hay forma
 
 - Solo se leen `data/games.csv`, `data/plays.csv` y `data/players.csv`. El tracking no se carga.
 - Rutas relativas a la raíz: `Path(__file__).resolve().parent.parent / "data"`. Solo lectura.
-- Se cargan una vez al arrancar (unos 2.5 MB) y se calculan en memoria. No se escribe a disco.
-- `playId` no es único: toda unión usa `(gameId, playId)`. Detalles en `hackaton-still-in-nfl/CONTEXTO_DATOS.md`; el conteo de tracking de ese documento (37 archivos) está desactualizado: hoy son 105 de 122 juegos.
+- Se cargan en la primera petición de datos y se mantienen en memoria. No se escribe a disco.
+- `playId` no es único: toda unión usa `(gameId, playId)`. Detalles en `CONTEXTO_DATOS.md` (raíz de la carpeta compartida); el conteo de tracking de ese documento (37 archivos) está desactualizado: hoy son 105 de 122 juegos.
 
 ## API
 
-Contrato en `docs/CONTRATO_API.md`. Rutas bajo `/api`, JSON en camelCase (`alias_generator=to_camel`, verificado), errores con formato único, `GET /health` intacto.
+Contrato en `docs/CONTRATO_API.md`. Rutas bajo `/api`, JSON en camelCase, errores con formato único, `GET /health` intacto.
 
 ## Comandos
 
 | Comando | Estado |
 |---|---|
-| `.venv/bin/python -m pytest` | Verificado (`pytest 8.3.5`); aún sin pruebas del proyecto |
+| `.venv/bin/python -m pytest` | Verificado: pruebas de datos, escenarios y API en `backend/tests` |
 | `.venv/bin/python -c "import backend.main"` | Verificado: importa y registra `/health` |
 | `npm run typecheck` (en `dashboard/`) | Verificado, sin errores |
-| `npm run build` (en `dashboard/`) | Declarado, sin ejecutar |
+| `npm run build` (en `dashboard/`) | Verificado |
 | `npm run dev` (en `dashboard/`) / `.venv/bin/uvicorn backend.main:app --reload` | Declarados, sin ejecutar |
-| `sh .hackathon/setup.sh --check` | Declarado; el log histórico es OK |
+| `sh .hackathon/setup.sh --check` | Verificado: TODO OK |
 | `sh .hackathon/setup.sh --entregar` | Solo al final: compila y crea el zip |
 
 `npm` debe correr con el Node portable en el PATH si no hay Node 22.23.1 en el sistema: `PATH=<proyecto>/.hackathon/.tools/node/bin:$PATH`.
 
 ## Decisiones técnicas
 
-- Vite necesita proxy `/api` hacia `http://localhost:8000` y conservar `base: './'` (pendiente de configurar; lo hace la Persona 2).
+- Vite necesita proxy `/api` hacia `http://localhost:8000` y conservar `base: './'` (ya configurado).
 - Llamadas del dashboard sin diagonal inicial: `fetch('api/...')`. `dashboard/index.html` usa `/src/main.tsx` por defecto de Vite; el guard de entrega solo revisa `src/`, así que se revisa a mano.
-- `npm run build` falla con errores de tipos; `--entregar` solo avisa. Se corrige siempre con `typecheck`.
+- `npm run typecheck` y `npm run build` pasan; ejecutarlos de nuevo después de cambios del frontend.
 - IA fuera del MVP. Si se añade: solo Bedrock con Nova, y la app debe funcionar sin ella.
 
 ## Pendiente

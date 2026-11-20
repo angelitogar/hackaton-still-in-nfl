@@ -15,6 +15,7 @@
 - Nombres: `snake_case` en Python, `camelCase` en JSON y TypeScript, `PascalCase` en componentes y tipos, `kebab-case` en carpetas de features si hay varias palabras.
 - Commits: `tipo(área): descripción` (`feat`, `fix`, `test`, `docs`, `chore`). Ramas `p1/<tema>`, `p2/<tema>`, `contract/<cambio>`.
 - Un PR pequeño por tarea, revisado por la otra persona. `git pull --rebase origin main` antes de subir.
+- La raíz operativa es también un repositorio Git. Compara las dos copias antes de sincronizar; evita scripts que sobrescriban cambios sin revisarlos.
 - Cada archivo tiene un solo dueño; el ajeno solo se toca por acuerdo.
 
 ## Datos y lenguaje del producto

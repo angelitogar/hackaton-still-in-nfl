@@ -2,19 +2,23 @@
 
 ## Raíz de trabajo y Git
 
-- **Raíz operativa y de entrega:** `hackathon-unam/` (cada persona tiene la suya, instalada con `setup.sh`).
-- **Repositorio compartido:** `git@github.com:angelitogar/hackaton-still-in-nfl.git`, rama `main`. La carpeta `hackaton-still-in-nfl/` es un clon antiguo de ese remoto y no es la raíz de ejecución, porque `setup.sh` no instala en carpetas no vacías.
-- Decisión confirmada (opción A): cada raíz instalada se conecta al remoto compartido. El procedimiento está en `docs/PLAN_TRABAJO.md`, Tarea 0.
-- Fuera de Git: `data/`, `.venv/`, `node_modules/`, `dist/`, `.env`, `.hackathon/.tools/`, `.hackathon/.cache/`.
+- La raíz operativa y repositorio principal es `hackathon-unam/`: aquí están los datos, el entorno, el backend y el dashboard que se ejecutan y empaquetan.
+- Hay una sola copia de trabajo, conectada al repositorio compartido. El clon anidado se retiró del proyecto y se guardó como respaldo fuera de él.
+- La rama `p2/dashboard-mvp` sigue `origin/main` para integrar cambios, pero los cambios locales todavía deben revisarse y compartirse explícitamente. No hagas push ni fusiones destructivas por tu cuenta.
+- No se versionan `data/`, `.venv/`, `node_modules/`, `dist/`, `.env` ni las herramientas del instalador.
 
 ## Estructura real
+
+Proyecto instalado:
 
 ```text
 hackathon-unam/
 ├── README.md                  # requerido por --entregar
 ├── backend/                   # Python (FastAPI)
 │   ├── __init__.py
-│   └── main.py                # expone app y GET /health
+│   ├── main.py                # API y GET /health
+│   ├── analysis.py            # análisis histórico en memoria
+│   └── tests/                 # pruebas del backend
 ├── dashboard/                 # React + Vite + TypeScript + Tailwind 3
 │   ├── index.html
 │   ├── package.json, package-lock.json
@@ -24,11 +28,12 @@ hackathon-unam/
 ├── docs/                      # plan, contrato, prompts
 ├── .hackathon/                # instalador del evento: no mover ni editar
 ├── .kiro/steering/            # rules.md + product, tech, structure, conventions
-├── .venv/                     # no mover
-└── hackaton-still-in-nfl/     # clon antiguo del remoto
+└── .venv/                     # no mover
 ```
 
-No se mueven `.hackathon/`, `.venv/` ni `.kiro/`, ni se cambia la estructura de carpetas.
+La app se ejecuta desde esta raíz. No uses el antiguo flujo de copia entre repositorios.
+
+No se mueven `.hackathon/`, `.venv/` ni `.kiro/`, ni se cambia la estructura de carpetas del proyecto instalado.
 
 ## Dónde va el código nuevo
 

@@ -7,7 +7,7 @@ Equipo Still-In: Miguel Angel Jimenez y Angel Daniel Garcia.
 ## Qué hace
 
 - Diagnostica un equipo con las jugadas de 2021 (semanas 1 a 8), en ataque o defensa.
-- Compara cada segmento de jugada (down, distancia, cuarto, reloj, zona de campo, formación, play action y cobertura) con la mediana de los 32 equipos de la muestra, mostrando tamaño de muestra e intervalo.
+- Compara segmentos de jugadas de pase (down, distancia, cuarto, reloj, zona de campo, formación, play action y cobertura) con la mediana de equipos que tienen muestra suficiente; muestra el tamaño de muestra y un intervalo aproximado.
 - Presenta áreas de atención y fortalezas como tendencias observadas.
 - Permite armar un escenario hipotético: estrategia (competir o reconstruir), necesidad, posición objetivo, socio calculado o elegido a mano y activo futuro.
 
@@ -17,7 +17,7 @@ Los datos no incluyen contratos, rosters, agentes libres, picks ni valor de merc
 
 ## Datos
 
-`data/games.csv` (122 juegos), `data/plays.csv` (8,557 jugadas) y `data/players.csv` (1,679 jugadores). Es una muestra histórica de 2021 y no representa plantillas actuales. Los códigos de `passResult` y los campos PFF se muestran como etiquetas crudas porque el conjunto no incluye diccionario.
+`data/games.csv`, `data/plays.csv` y `data/players.csv`. La muestra contiene jugadas de pase históricas de 2021, semanas 1 a 8; no representa todas las jugadas ni plantillas actuales. `playResult` incluye yardas por penalización. Los hallazgos son exploratorios y no establecen causalidad.
 
 ## Cómo ejecutarlo
 
@@ -26,14 +26,15 @@ Los datos no incluyen contratos, rosters, agentes libres, picks ni valor de merc
 .venv/bin/uvicorn backend.main:app --reload
 
 # Frontend (en otra terminal)
-cd dashboard && npm run dev
+cd dashboard
+PATH="../.hackathon/.tools/node/bin:$PATH" npm run dev
 ```
 
 Abre la dirección `localhost` que muestra Vite. Verificación del entorno: `sh .hackathon/setup.sh --check`.
 
-**Datos de demostración o API real.** Mientras el backend no implemente los endpoints de `docs/CONTRATO_API.md`, el dashboard usa datos de ejemplo con la forma exacta del contrato y lo avisa con un banner. Para usar la API real: `VITE_USE_MOCKS=false npm run dev` (con Uvicorn en el puerto 8000; Vite reenvía `/api`).
+**La aplicación usa la API real por defecto.** Para iniciar el modo de demostración con datos ficticios, usa `VITE_USE_MOCKS=true` al arrancar Vite. Los escenarios son hipotéticos y no afirman disponibilidad ni viabilidad de trades.
 
-Validación del frontend: `npm run typecheck` y `npm run build` dentro de `dashboard/`.
+Validación: `OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q backend/tests` desde la raíz. En `dashboard/`, antepón `PATH="../.hackathon/.tools/node/bin:$PATH"` a `npm run typecheck` y `npm run build`.
 
 ## Stack
 
@@ -41,7 +42,4 @@ Python 3.12 · FastAPI · pandas · React 18 · Vite · TypeScript · Tailwind 3
 
 ## Documentación
 
-Plan y reparto de trabajo: `docs/PLAN_TRABAJO.md`. Contrato de la API: `docs/CONTRATO_API.md`. Contexto de los datos: `hackaton-still-in-nfl/CONTEXTO_DATOS.md`.
-
-<!-- Pendiente (Fase 4): añadir la captura docs/preview.png y comprobar los comandos de ejecución. -->
-![Vista previa](docs/preview.png)
+Plan y reparto de trabajo: `docs/PLAN_TRABAJO.md`. Contrato de la API: `docs/CONTRATO_API.md`. Contexto de los datos: `CONTEXTO_DATOS.md`.
