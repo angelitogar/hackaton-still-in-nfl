@@ -1,0 +1,22 @@
+.venv/
+.hackathon/.tools/
+.hackathon/.cache/
+.hackathon/.bootstrap/
+.hackathon/setup.log
+node_modules/
+dist/
+__pycache__/
+
+# Llaves y credenciales: nunca al repositorio
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.aws/
+
+# Datos del evento: se comparten fuera de Git (el tracking pesa ~700 MB)
+data/
+
+# Clon antiguo del remoto compartido (evita repositorios anidados)
+hackaton-still-in-nfl/
