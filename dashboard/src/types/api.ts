@@ -35,6 +35,7 @@ export interface SliceMetric {
 }
 
 export interface Finding extends SliceMetric {
+  fallback?: boolean
   rank: number
   explanation: string
 }

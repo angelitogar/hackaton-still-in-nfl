@@ -86,3 +86,33 @@ def test_simulated_positions_include_offensive_line():
     payload = {'team': 'KC', 'strategy': 'balanced', 'need': {'dimension': 'down', 'bucket': row['bucket'], 'perspective': 'offense'}, 'targetPosition': 'OL'}
     result = request('POST', '/api/scenarios/preview', json=payload).json()
     assert all(p['simulation']['targetPosition'] == 'OL' for p in result['partnerProfiles'])
+
+
+def test_every_team_has_an_explorable_need_without_fabricating_a_verdict():
+    for team in analysis.meta()['teams']:
+        for perspective in ('offense', 'defense'):
+            needs = analysis.diagnosis(team, perspective)['attention']
+            assert needs, f'{team} {perspective} has no need'
+            for item in needs:
+                assert item['sampleFlag'] == 'ok'
+                if item.get('fallback'):
+                    assert 'Prioridad relativa' in item['explanation']
+                    assert item['verdict'] != 'adverse'
+                else:
+                    assert item['verdict'] == 'adverse'
+
+
+def test_minimal_priority_is_explorable_and_late_pick_is_hypothetical():
+    priority = next(
+        (team, perspective, item)
+        for team in analysis.meta()['teams']
+        for perspective in ('offense', 'defense')
+        for item in analysis.diagnosis(team, perspective)['attention']
+        if item.get('fallback')
+    )
+    team, perspective, item = priority
+    payload = {'team': team, 'strategy': 'rebuild', 'need': {'dimension': item['dimension'], 'bucket': item['bucket'], 'perspective': perspective}}
+    response = request('POST', '/api/scenarios/preview', json=payload)
+    assert response.status_code == 200
+    assert 'quinta o sexta ronda' in response.json()['partnerProfiles'][0]['simulation']['draftProposal']
+    assert 'no es una valoración real' in response.json()['partnerProfiles'][0]['simulation']['draftProposal']

@@ -97,6 +97,14 @@ def diagnosis(team, perspective):
     def findings(verdict):
         ranked = sorted((r for r in rows if r['verdict'] == verdict), key=lambda r: abs(r['diff']), reverse=True)[:3]
         return [{**r, 'rank': i+1, 'explanation': 'Diferencia exploratoria respecto a la mediana de equipos con muestra suficiente; no demuestra causalidad.'} for i, r in enumerate(ranked)]
+    attention = findings('adverse')
+    if not attention:
+        eligible = [row for row in rows if row['sampleFlag'] == 'ok']
+        if eligible:
+            # Least favorable comparison, even when all differences are positive.
+            weakest = min(eligible, key=lambda row: row['diff'] if perspective == 'offense' else -row['diff'])
+            attention = [{**weakest, 'rank': 1, 'fallback': True,
+                          'explanation': 'Prioridad relativa de exploración: es el segmento menos favorable disponible, no una debilidad demostrada ni una valoración de mercado.'}]
     mixes = []
     for label in sorted(plays.passResult.dropna().unique()):
         per_team = plays.assign(match=(plays.passResult == label)).groupby(col)['match'].mean()
@@ -104,7 +112,7 @@ def diagnosis(team, perspective):
     mean = float(own.result.mean())
     return {'team': team, 'perspective': perspective, 'season': 2021, 'sample': {'plays': len(own), 'games': int(own.gameId.nunique())},
             'summary': {'avgPlayResult': mean, 'leagueMedian': float(peer.median()), 'percentile': percentile(mean, peer, perspective)},
-            'attention': findings('adverse'), 'strengths': findings('favorable'), 'outcomeMix': mixes,
+            'attention': attention, 'strengths': findings('favorable'), 'outcomeMix': mixes,
             'caveats': LIMITS + ['Intervalos aproximados y comparaciones múltiples: no son pruebas causales ni inferencias confirmatorias.', 'La zona de campo se calcula a partir de yardlineSide, yardlineNumber y possessionTeam.']}
 
 SIM_POSITIONS = ('QB', 'RB', 'WR', 'TE', 'OL', 'CB', 'DE', 'LB')
@@ -123,6 +131,9 @@ def scenario(request):
     matches = [r for r in slice_rows(team, need['perspective'], need['dimension']) if r['bucket'] == need['bucket'] and r['sampleFlag'] == 'ok']
     if not matches:
         return None
+    priority = next((item for item in diagnosis(team, need['perspective'])['attention']
+                     if item['dimension'] == need['dimension'] and item['bucket'] == need['bucket']), None)
+    minimal = bool(priority and priority.get('fallback'))
     partners = []
     selected = request.get('partnerTeam')
     our_roster = fictional_roster(team)
@@ -138,7 +149,7 @@ def scenario(request):
         their_need = min(SIM_POSITIONS, key=lambda pos: (len(their_roster[pos]), pos))
         offer_count = len(our_roster[their_need])
         target_count = len(their_roster[target])
-        weaknesses = len(diagnosis(candidate, need['perspective'])['attention'])
+        weaknesses = sum(1 for item in diagnosis(candidate, need['perspective'])['attention'] if not item.get('fallback'))
         score = round((weaknesses / 3) * 35 + (35 if offer_count > 1 else 0) + (20 if target_count > 1 else 0) + (10 if row and row['verdict'] == 'adverse' else 0))
         offer = our_roster[their_need][0] if offer_count > 1 else None
         receiving = their_roster[target][0] if target_count > 1 else None
@@ -146,8 +157,8 @@ def scenario(request):
                          'note': 'Plantillas y necesidades por posición simuladas; la comparación de jugadas es histórica. No implica disponibilidad ni aceptación.',
                          'simulation': {'theirNeed': their_need, 'ourCount': offer_count, 'theirTargetCount': target_count,
                                         'targetPosition': target, 'offerPlayer': offer, 'receivePlayer': receiving, 'weaknessCount': weaknesses,
-                                        'draftProposal': (('Explorar ofrecer un jugador ficticio y solicitar una selección futura de primera ronda.' if offer else 'Sin excedente simulado para ofrecer: define otro activo antes de pedir una selección.') if request['strategy'] == 'rebuild' else ('Explorar ofrecer una selección futura de primera ronda a cambio del jugador ficticio.' if receiving else 'Sin excedente simulado en la posición buscada: elige otro socio.') if request['strategy'] == 'compete' else 'Explorar jugadores ficticios y una selección futura como parte de una negociación simulada.'),
-                                        'draftPicks': 'Cada equipo tiene ficticiamente una selección por ronda.',
+                                        'draftProposal': ('Prioridad relativa pequeña: explorar hipotéticamente una selección de quinta o sexta ronda; no es una valoración real.' if minimal else ('Explorar ofrecer un jugador ficticio y solicitar una selección futura de primera ronda.' if offer else 'Sin excedente simulado para ofrecer: define otro activo antes de pedir una selección.') if request['strategy'] == 'rebuild' else ('Explorar ofrecer una selección futura de primera ronda a cambio del jugador ficticio.' if receiving else 'Sin excedente simulado en la posición buscada: elige otro socio.') if request['strategy'] == 'compete' else 'Explorar jugadores ficticios y una selección futura como parte de una negociación simulada.'),
+                                        'draftPicks': 'Cada equipo tiene ficticiamente una selección por ronda. Para una prioridad relativa pequeña se puede explorar una selección simulada de quinta o sexta ronda, sin asignar un valor real.',
                                         'fitScore': score}})
     partners.sort(key=lambda p: (-p['simulation']['fitScore'], p['team']))
     for i, partner in enumerate(partners):
@@ -155,6 +166,8 @@ def scenario(request):
     assumptions = [f"Estrategia: {request['strategy']} (selección manual).",
                    'Plantillas, jugadores y necesidades por posición son ficticios; cada equipo tiene una selección por ronda.',
                    'La posición simulada no se deduce de las jugadas históricas.']
+    if minimal:
+        assumptions.append('Necesidad mínima: prioridad relativa exploratoria, sin evidencia concluyente ni valoración de mercado.')
     for key, title in [('targetPosition', 'Posición objetivo'), ('partnerTeam', 'Equipo elegido')]:
         if request.get(key): assumptions.append(f'{title}: {request[key]} (dato manual).')
     if request.get('manualRecord'):

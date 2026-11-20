@@ -1,6 +1,7 @@
 import type { ScenarioPreview, ScenarioRequest } from '../../types/api'
 import { buildScenarioSummary } from '../../lib/scenarioSummary'
 import { segmentLabel } from '../../lib/labels'
+import { TeamLogo } from '../../components/TeamLogo'
 import { CopyButton } from '../../components/CopyButton'
 import { NoticeList } from '../../components/NoticeList'
 import { SliceFigures } from '../../components/SliceFigures'
@@ -50,7 +51,7 @@ export function ScenarioResult({ request, preview, season }: ScenarioResultProps
             {preview.partnerProfiles.map((profile) => (
               <article key={profile.team} className="rounded-md border border-zinc-800 bg-zinc-950/60 p-3">
                 <header className="mb-2 flex flex-wrap items-center gap-2">
-                  <h3 className="text-sm font-semibold text-zinc-100">#{profile.simulation?.rank} · {profile.team}</h3>
+                  <TeamLogo team={profile.team} className="h-9 w-9" /><h3 className="text-sm font-semibold text-zinc-100">#{profile.simulation?.rank} · {profile.team}</h3>
                   {profile.simulation && <Badge tone="info">{profile.simulation.fitScore}% de encaje simulado</Badge>}
                 </header>
                 {profile.simulation && <div className="space-y-1 text-xs text-zinc-300">
@@ -71,7 +72,6 @@ export function ScenarioResult({ request, preview, season }: ScenarioResultProps
       {preview.assumptions.length > 0 && (
         <NoticeList title="Supuestos del usuario" subtitle="Datos manuales, no verificados." items={preview.assumptions} />
       )}
-      <NoticeList title="Datos que faltan para evaluar un trade real" items={preview.missingData} tone="warn" />
       <NoticeList title="Avisos" items={preview.disclaimers} tone="warn" />
 
       <Panel title="Resumen para copiar">

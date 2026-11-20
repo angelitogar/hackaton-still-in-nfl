@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { getDiagnosis } from '../api/endpoints'
 import { AppHeader } from '../components/AppHeader'
-import { MissingDataPanel } from '../components/MissingDataPanel'
 import { MockBanner } from '../components/MockBanner'
 import { Tabs, type TabOption } from '../components/Tabs'
 import { TeamControls } from '../components/TeamControls'
@@ -36,7 +35,7 @@ export function Dashboard({ meta }: { meta: Meta }) {
     <div className="min-h-screen">
       <MockBanner />
       <AppHeader meta={meta} />
-      <div className="mx-auto grid max-w-[1400px] gap-6 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="mx-auto max-w-[1400px] px-6 py-5">
         <main className="min-w-0 space-y-4">
           <TeamControls
             teams={meta.teams}
@@ -67,9 +66,6 @@ export function Dashboard({ meta }: { meta: Meta }) {
             />
           )}
         </main>
-        <aside className="lg:sticky lg:top-4 lg:self-start">
-          <MissingDataPanel limits={meta.limits} />
-        </aside>
       </div>
     </div>
   )

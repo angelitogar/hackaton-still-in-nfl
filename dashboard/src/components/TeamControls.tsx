@@ -1,6 +1,7 @@
 import type { Perspective } from '../types/api'
 import { PERSPECTIVE_LABELS } from '../lib/labels'
 import { cx } from '../lib/cx'
+import { TeamLogo } from './TeamLogo'
 import { CONTROL_CLASSES, Field } from './ui/Field'
 
 interface TeamControlsProps {
@@ -16,6 +17,7 @@ const PERSPECTIVES: Perspective[] = ['offense', 'defense']
 export function TeamControls({ teams, team, perspective, onTeamChange, onPerspectiveChange }: TeamControlsProps) {
   return (
     <div className="flex flex-wrap items-end gap-4">
+      <TeamLogo team={team} className="h-12 w-12" />
       <div className="w-40">
         <Field label="Equipo" htmlFor="team-select">
           <select

@@ -3,6 +3,7 @@ import { FindingsPanel } from '../../components/FindingsPanel'
 import { NoticeList } from '../../components/NoticeList'
 import { OutcomeMix } from '../../components/OutcomeMix'
 import { SummaryCard } from '../../components/SummaryCard'
+import { PerformanceMap } from '../../components/PerformanceMap'
 import { SegmentExplorer } from './SegmentExplorer'
 
 interface DiagnosisViewProps {
@@ -16,6 +17,7 @@ export function DiagnosisView({ diagnosis, meta, onSelectNeed }: DiagnosisViewPr
   return (
     <div className="space-y-4">
       <SummaryCard diagnosis={diagnosis} />
+      <PerformanceMap attention={diagnosis.attention} strengths={diagnosis.strengths} perspective={perspective} />
       <div className="grid gap-4 xl:grid-cols-2">
         <FindingsPanel
           title="Áreas de atención"

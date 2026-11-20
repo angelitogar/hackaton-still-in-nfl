@@ -1,3 +1,5 @@
+> **Prioridad mínima:** Cada equipo y perspectiva presenta al menos una oportunidad explorable con muestra suficiente. Si no existe señal adversa concluyente, se usa el segmento menos favorable como prioridad relativa, no como debilidad probada. El laboratorio puede mencionar una selección ficticia de quinta o sexta ronda sin atribuirle valor real.
+
 > **Actualización del producto:** El laboratorio ahora ofrece competir, equilibrar o reconstruir; el récord manual produce porcentajes orientativos, no probabilidades. Las plantillas, jugadores, necesidades de posición y selecciones son una simulación ficticia. No se usa un campo de activo futuro libre. Esta actualización prevalece sobre las secciones anteriores que describen el flujo previo.
 
 # NFL TRADE BOWL: producto

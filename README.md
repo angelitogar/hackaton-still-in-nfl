@@ -1,47 +1,22 @@
-# NFL TRADE BOWL
+# NFL TRADE BOWL 🏈
 
-Herramienta para explorar cómo está construido un equipo de la NFL y plantear escenarios hipotéticos de mejora.
+### Del dato al tablero. Del tablero a una decisión.
 
-Equipo Still-In: Miguel Angel Jimenez y Angel Daniel Garcia.
+**NFL TRADE BOWL** transforma una muestra histórica de 8,557 jugadas de pase de 2021 en un diagnóstico visual y un laboratorio para explorar decisiones de conformación de equipos. Comparamos las yardas medias de cada segmento con la mediana de equipos que tienen muestra suficiente y mostramos el número de jugadas y un intervalo aproximado.
 
-## Qué hace
+## Hallazgos de la muestra
 
-- Diagnostica un equipo con las jugadas de 2021 (semanas 1 a 8), en ataque o defensa.
-- Compara segmentos de jugadas de pase (down, distancia, cuarto, reloj, zona de campo, formación, play action y cobertura) con la mediana de equipos que tienen muestra suficiente; muestra el tamaño de muestra y un intervalo aproximado.
-- Presenta áreas de atención y fortalezas como tendencias observadas.
-- Permite simular escenarios con estrategia de competir, equilibrar o reconstruir, récord manual y socios, jugadores y selecciones ficticios. Los porcentajes son prioridades orientativas basadas en el récord, no probabilidades reales.
+| Equipo y perspectiva | Segmento observado | Jugadas | Yardas medias | Mediana comparable |
+|---|---|---:|---:|---:|
+| Carolina · ataque | Terceras oportunidades | 86 | 3.9 | 6.3 |
+| Kansas City · defensa | Jugadas rivales con play action | 79 | 10.9 | 8.0 |
+| Arizona · ataque | Jugadas en campo rival | 64 | 10.2 | 6.7 |
+| Arizona · ataque | Play action · prioridad relativa | 76 | 7.4 | 7.8 |
 
-## Qué no hace
+Las primeras dos filas señalan oportunidades de mejora y la tercera una fortaleza observada; la cuarta es una prioridad relativa **sin evidencia concluyente**, no una debilidad demostrada. Usamos estas señales para alimentar el mapa de rendimiento, elegir una necesidad y comparar socios en un escenario según el récord y la estrategia que introduce el usuario. Las zonas del mapa son ilustrativas y el laboratorio utiliza plantillas, jugadores y selecciones ficticios, por lo que sus porcentajes y propuestas no son probabilidades ni valoraciones de mercado.
 
-Los datos no incluyen contratos, rosters, agentes libres, picks ni valor de mercado. Por eso nada de lo que muestra es una recomendación de trade ni afirma disponibilidad, viabilidad o valor. Los datos manuales (estrategia, récord, activos) se rotulan como supuestos y no influyen en los cálculos. El tracking no se usa en esta versión.
+![Vista del diagnóstico y mapa de rendimiento de NFL TRADE BOWL](docs/vista-proyecto.jpg)
 
-## Datos
+**Equipo Still-In:** Miguel Angel Jimenez y Angel Daniel Garcia · NFL Big Data Bowl UNAM
 
-`data/games.csv`, `data/plays.csv` y `data/players.csv`. La muestra contiene jugadas de pase históricas de 2021, semanas 1 a 8; no representa todas las jugadas ni plantillas actuales. `playResult` incluye yardas por penalización. Los hallazgos son exploratorios y no establecen causalidad.
-
-## Cómo ejecutarlo
-
-Primero instala la plantilla oficial del evento y coloca sus datos en `data/`. El entorno y los datos no se guardan en Git. Para iniciar ambos servicios desde la raíz puedes ejecutar `./iniciar.sh` y dejar la terminal abierta. También puedes iniciarlos por separado:
-
-```sh
-# Backend (desde la raíz del proyecto)
-.venv/bin/uvicorn backend.main:app --reload
-
-# Frontend (en otra terminal)
-cd dashboard
-PATH="../.hackathon/.tools/node/bin:$PATH" npm run dev
-```
-
-Abre la dirección `localhost` que muestra Vite. Verificación del entorno: `sh .hackathon/setup.sh --check`.
-
-**La aplicación usa la API real por defecto.** Para iniciar el modo de demostración con datos ficticios, usa `VITE_USE_MOCKS=true` al arrancar Vite. Los escenarios son hipotéticos y no afirman disponibilidad ni viabilidad de trades.
-
-Validación: `OPENBLAS_NUM_THREADS=1 .venv/bin/python -m pytest -q backend/tests` desde la raíz. En `dashboard/`, antepón `PATH="../.hackathon/.tools/node/bin:$PATH"` a `npm run typecheck` y `npm run build`.
-
-## Stack
-
-Python 3.12 · FastAPI · pandas · React 18 · Vite · TypeScript · Tailwind 3 · Recharts
-
-## Documentación
-
-Plan y reparto de trabajo: `docs/PLAN_TRABAJO.md`. Contrato de la API: `docs/CONTRATO_API.md`. Contexto de los datos: `CONTEXTO_DATOS.md`.
+[Guía de uso, datos y ejecución](docs/GUIA_DE_USO.md) · [Contexto del dataset](CONTEXTO_DATOS.md)

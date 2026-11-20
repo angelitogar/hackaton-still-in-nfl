@@ -7,7 +7,7 @@ interface Props { team: string; perspective: Perspective; meta: Meta; attention:
 const STRATEGIES: Strategy[] = ['compete', 'balanced', 'rebuild']
 const key = (need: ScenarioNeed): string => `${need.dimension}|${need.bucket}`
 export function ScenarioForm({ team, perspective, meta, attention, need, form, errors, submitting, onNeedChange, onChange, onSubmit }: Props) {
-  const options = attention.map(({ dimension, bucket }) => ({ dimension, bucket, perspective }))
+  const options = attention.map(({ dimension, bucket, fallback }) => ({ dimension, bucket, perspective, fallback }))
   const currentListed = need !== null && options.some((option) => key(option) === key(need))
   const record = buildRecord(form), mix = record ? strategyMix(record) : null
   const focus = form.focus || defaultFocus(perspective)
@@ -27,10 +27,10 @@ export function ScenarioForm({ team, perspective, meta, attention, need, form, e
         {mix ? <div className="mt-3 rounded bg-emerald-950/30 p-3 text-sm text-emerald-200">Orientación simulada: competir {mix.compete}% · equilibrar {mix.balanced}% · reconstruir {mix.rebuild}%<p className="mt-1 text-xs text-zinc-400">Reparto orientativo basado solo en el récord; no es probabilidad de Super Bowl ni de obtener el pick 1. Puedes elegir otra estrategia.</p></div> : <p className="mt-3 text-xs text-zinc-500">Captura victorias y derrotas para ver una orientación. Un 0-6 favorece reconstruir, pero no significa eliminación matemática.</p>}
       </fieldset>
       <fieldset><legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">2 · Elige tu estrategia</legend><div className="flex flex-wrap gap-2">{STRATEGIES.map((option) => <label key={option} className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm ${form.strategy === option ? 'border-emerald-500 bg-emerald-900/30 text-emerald-200' : 'border-zinc-700 text-zinc-300'}`}><input type="radio" name="strategy" checked={form.strategy === option} onChange={() => onChange({ strategy: option })} className="accent-emerald-500" />{STRATEGY_LABELS[option]}</label>)}</div></fieldset>
-      <Field label={`3 · Necesidad de ${team}`} htmlFor="need-select" hint="Tendencias adversas del equipo y perspectiva. También puedes elegir un segmento desde Diagnóstico."><select id="need-select" value={need ? key(need) : ''} onChange={(e) => { const selected = options.find((option) => key(option) === e.target.value); if (selected) onNeedChange(selected) }} className={CONTROL_CLASSES}>
+      <Field label={`3 · Necesidad de ${team}`} htmlFor="need-select" hint="Hallazgos del equipo y la perspectiva; si no hay una señal adversa clara, aparece una prioridad relativa de exploración."><select id="need-select" value={need ? key(need) : ''} onChange={(e) => { const selected = options.find((option) => key(option) === e.target.value); if (selected) onNeedChange(selected) }} className={CONTROL_CLASSES}>
         {!need && <option value="">{options.length ? 'Elige una necesidad…' : 'Sin necesidades detectadas en esta muestra'}</option>}
         {need && !currentListed && <option value={key(need)}>{segmentLabel(need.dimension, need.bucket)} ({PERSPECTIVE_LABELS[need.perspective]}, elegido en el diagnóstico)</option>}
-        {options.map((option) => <option key={key(option)} value={key(option)}>{segmentLabel(option.dimension, option.bucket)}</option>)}
+        {options.map((option) => <option key={key(option)} value={key(option)}>{segmentLabel(option.dimension, option.bucket)}{option.fallback ? ' · prioridad relativa' : ''}</option>)}
       </select></Field>
       {options.length === 0 && !need && <p className="rounded border border-amber-800/50 bg-amber-950/20 p-3 text-xs text-amber-200">No hay una tendencia adversa con suficiente evidencia para {team}. En Diagnóstico puedes elegir un segmento manualmente.</p>}
       <Field label="Área a reforzar" htmlFor="focus-select" hint="Elige el área como supuesto: el conjunto disponible no permite atribuir la necesidad a una posición ni diagnosticar carreras."><select id="focus-select" value={focus} onChange={(e) => onChange({ focus: e.target.value as Focus, targetPosition: '' })} className={CONTROL_CLASSES}>{FOCUS_OPTIONS[perspective].map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></Field>

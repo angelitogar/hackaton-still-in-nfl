@@ -15,7 +15,7 @@ export function FindingCard({ finding, perspective, onSelectNeed }: FindingCardP
       <header className="mb-2 flex flex-wrap items-center gap-2">
         <span className="font-mono text-xs text-zinc-500">#{finding.rank}</span>
         <h3 className="text-sm font-semibold text-zinc-100">{segmentLabel(finding.dimension, finding.bucket)}</h3>
-        <VerdictBadge verdict={finding.verdict} />
+        {finding.fallback ? <span className="rounded bg-amber-950/40 px-2 py-1 text-xs text-amber-200">Prioridad relativa · evidencia limitada</span> : <VerdictBadge verdict={finding.verdict} />}
         <SampleBadge flag={finding.sampleFlag} />
       </header>
       <SliceFigures slice={finding} />

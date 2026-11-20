@@ -32,7 +32,6 @@ export function buildScenarioSummary(request: ScenarioRequest, preview: Scenario
       ),
     ),
     ...section('Supuestos del usuario', preview.assumptions),
-    ...section('Datos que faltan', preview.missingData),
     ...section('Avisos', preview.disclaimers),
   ].join('\n')
 }
