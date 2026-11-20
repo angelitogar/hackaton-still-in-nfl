@@ -9,7 +9,7 @@ Equipo Still-In: Miguel Angel Jimenez y Angel Daniel Garcia.
 - Diagnostica un equipo con las jugadas de 2021 (semanas 1 a 8), en ataque o defensa.
 - Compara segmentos de jugadas de pase (down, distancia, cuarto, reloj, zona de campo, formación, play action y cobertura) con la mediana de equipos que tienen muestra suficiente; muestra el tamaño de muestra y un intervalo aproximado.
 - Presenta áreas de atención y fortalezas como tendencias observadas.
-- Permite armar un escenario hipotético: estrategia (competir o reconstruir), necesidad, posición objetivo, socio calculado o elegido a mano y activo futuro.
+- Permite simular escenarios con estrategia de competir, equilibrar o reconstruir, récord manual y socios, jugadores y selecciones ficticios. Los porcentajes son prioridades orientativas basadas en el récord, no probabilidades reales.
 
 ## Qué no hace
 
@@ -20,6 +20,8 @@ Los datos no incluyen contratos, rosters, agentes libres, picks ni valor de merc
 `data/games.csv`, `data/plays.csv` y `data/players.csv`. La muestra contiene jugadas de pase históricas de 2021, semanas 1 a 8; no representa todas las jugadas ni plantillas actuales. `playResult` incluye yardas por penalización. Los hallazgos son exploratorios y no establecen causalidad.
 
 ## Cómo ejecutarlo
+
+Primero instala la plantilla oficial del evento y coloca sus datos en `data/`. El entorno y los datos no se guardan en Git. Para iniciar ambos servicios desde la raíz puedes ejecutar `./iniciar.sh` y dejar la terminal abierta. También puedes iniciarlos por separado:
 
 ```sh
 # Backend (desde la raíz del proyecto)

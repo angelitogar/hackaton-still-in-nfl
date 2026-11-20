@@ -23,7 +23,7 @@
 - Etiquetas crudas (`C`, `I`, `S`, `R`, `IN`, campos PFF) se muestran tal cual.
 - Se dice "tendencia observada" y "muestra 2021", nunca "debilidad confirmada", "conversión oficial" ni "equipo actual".
 - Prohibido afirmar disponibilidad, valor de mercado, viabilidad, equidad o aceptación de un trade.
-- Los datos manuales se rotulan "dato manual, no verificado" y no entran en cálculos.
+- Los datos manuales se rotulan "dato manual, no verificado"; el récord solo alimenta la orientación simulada de estrategias, nunca el análisis histórico.
 - Toda cifra muestra su n y la muestra de la que sale.
 
 ## Validación antes de dar una tarea por terminada

@@ -1,8 +1,7 @@
 .venv/
-.hackathon/.tools/
-.hackathon/.cache/
-.hackathon/.bootstrap/
-.hackathon/setup.log
+.hackathon/
+setup-log.txt
+.pytest_cache/
 node_modules/
 dist/
 __pycache__/

@@ -1,3 +1,5 @@
+> **Actualización del producto:** El laboratorio ahora ofrece competir, equilibrar o reconstruir; el récord manual produce porcentajes orientativos, no probabilidades. Las plantillas, jugadores, necesidades de posición y selecciones son una simulación ficticia. No se usa un campo de activo futuro libre. Esta actualización prevalece sobre las secciones anteriores que describen el flujo previo.
+
 # NFL TRADE BOWL: producto
 
 > Las reglas de stack y despliegue de `rules.md` tienen prioridad sobre este archivo.
