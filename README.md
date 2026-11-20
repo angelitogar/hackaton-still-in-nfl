@@ -2,7 +2,7 @@
 
 ### Del dato al tablero. Del tablero a una decisión.
 
-**NFL TRADE BOWL** transforma una muestra histórica de 8,557 jugadas de pase de 2021 en un diagnóstico visual y un laboratorio para explorar decisiones de conformación de equipos. Comparamos las yardas medias de cada segmento con la mediana de equipos que tienen muestra suficiente y mostramos el número de jugadas y un intervalo aproximado.
+**NFL TRADE BOWL** transforma una muestra histórica de 8,557 jugadas de pase de 2021 en un diagnóstico visual y un laboratorio para explorar decisiones de conformación de equipos. Comparamos las yardas medias de cada segmento con la mediana de equipos que tienen muestra suficiente y mostramos el número de jugadas y un intervalo aproximado. El hallazgo es encontrar trades para la conformación de un equipo en base a las necesidades del equipo, reconstrucción, buscar el SB o competir y al mismo tiempo reconstrucción.
 
 ## Hallazgos de la muestra
 
