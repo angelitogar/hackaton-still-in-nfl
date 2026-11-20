@@ -57,8 +57,32 @@ def test_scenario_manual_assumptions_do_not_change_evidence():
     row = next(r for r in rows if r['sampleFlag'] == 'ok')
     base = {'team': 'KC', 'strategy': 'rebuild', 'need': {'dimension': 'down', 'bucket': row['bucket'], 'perspective': 'offense'}}
     first = request('POST', '/api/scenarios/preview', json=base)
-    second = request('POST', '/api/scenarios/preview', json={**base, 'manualRecord': {'season': 2025, 'wins': 10, 'losses': 7}, 'futureAssetNote': 'Selección hipotética'})
+    second = request('POST', '/api/scenarios/preview', json={**base, 'manualRecord': {'season': 2025, 'wins': 10, 'losses': 7}})
     assert first.status_code == second.status_code == 200
     assert first.json()['evidence'] == second.json()['evidence']
     assert any('manual' in text for text in second.json()['assumptions'])
     assert 'hipotético' in second.json()['disclaimers'][0].lower()
+
+
+def test_fictional_rosters_and_balanced_scenario():
+    assert analysis.fictional_roster('KC') == analysis.fictional_roster('KC')
+    assert analysis.fictional_roster('KC') != analysis.fictional_roster('ARI')
+    row = next(row for row in analysis.slice_rows('KC', 'offense', 'down') if row['sampleFlag'] == 'ok')
+    payload = {'team': 'KC', 'strategy': 'balanced', 'need': {'dimension': 'down', 'bucket': row['bucket'], 'perspective': 'offense'}, 'targetPosition': 'WR', 'manualRecord': {'season': 2026, 'wins': 0, 'losses': 6}}
+    result = request('POST', '/api/scenarios/preview', json=payload)
+    assert result.status_code == 200
+    profiles = result.json()['partnerProfiles']
+    assert len(profiles) == 31 and all(p['team'] != 'KC' for p in profiles)
+    assert [p['simulation']['rank'] for p in profiles] == list(range(1, 32))
+    scores = [p['simulation']['fitScore'] for p in profiles]
+    assert scores == sorted(scores, reverse=True) and all(0 <= score <= 100 for score in scores)
+    assert all(p['simulation']['targetPosition'] == 'WR' for p in profiles)
+    assert all('fictici' in p['simulation']['draftPicks'] for p in profiles)
+    assert all(p['simulation']['ourCount'] >= 1 for p in profiles)
+
+
+def test_simulated_positions_include_offensive_line():
+    row = next(row for row in analysis.slice_rows('KC', 'offense', 'down') if row['sampleFlag'] == 'ok')
+    payload = {'team': 'KC', 'strategy': 'balanced', 'need': {'dimension': 'down', 'bucket': row['bucket'], 'perspective': 'offense'}, 'targetPosition': 'OL'}
+    result = request('POST', '/api/scenarios/preview', json=payload).json()
+    assert all(p['simulation']['targetPosition'] == 'OL' for p in result['partnerProfiles'])

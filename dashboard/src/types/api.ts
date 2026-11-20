@@ -1,7 +1,7 @@
 // Espejo en TypeScript de docs/CONTRATO_API.md. Se cambia solo junto con el contrato.
 
 export type Perspective = 'offense' | 'defense'
-export type Strategy = 'compete' | 'rebuild'
+export type Strategy = 'compete' | 'balanced' | 'rebuild'
 export type Dimension =
   | 'down'
   | 'distanceBucket'
@@ -100,14 +100,14 @@ export interface ScenarioRequest {
   targetPosition?: string
   partnerTeam?: string | null
   manualRecord?: ManualRecord
-  futureAssetNote?: string
 }
 
 export interface PartnerProfile {
   team: string
-  slice: SliceMetric
+  slice: SliceMetric | null
   source: 'computed' | 'manual'
   note: string
+  simulation?: { theirNeed: string; ourCount: number; theirTargetCount: number; targetPosition: string; offerPlayer: string | null; receivePlayer: string | null; draftProposal: string; draftPicks: string; fitScore: number; weaknessCount: number; rank: number }
 }
 
 export interface ScenarioPreview {

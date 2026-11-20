@@ -1,82 +1,32 @@
+import { defaultFocus, positionAdvice, type Focus } from './positionAdvice'
 import type { ManualRecord, ScenarioNeed, ScenarioRequest, Strategy } from '../types/api'
-
-export const NOTE_MAX_LENGTH = 280
-
-export interface ScenarioFormState {
-  strategy: Strategy | ''
-  targetPosition: string
-  partnerTeam: string
-  includeRecord: boolean
-  recordSeason: string
-  wins: string
-  losses: string
-  ties: string
-  futureAssetNote: string
+export interface ScenarioFormState { strategy: Strategy | ''; targetPosition: string; partnerTeam: string; includeRecord: boolean; recordSeason: string; wins: string; losses: string; ties: string; focus: Focus | '' }
+export function createInitialForm(_season: number): ScenarioFormState { return { strategy: '', targetPosition: '', partnerTeam: '', includeRecord: true, recordSeason: String(new Date().getFullYear()), wins: '', losses: '', ties: '', focus: '' } }
+function parseCount(text: string): number | null { return /^\d{1,4}$/.test(text.trim()) ? Number(text.trim()) : null }
+export function buildRecord(form: ScenarioFormState): ManualRecord | undefined {
+  if (!form.includeRecord) return undefined
+  const season = parseCount(form.recordSeason), wins = parseCount(form.wins), losses = parseCount(form.losses), ties = form.ties.trim() === '' ? 0 : parseCount(form.ties)
+  if (season === null || season < 1920 || season > 2100 || wins === null || losses === null || ties === null || wins + losses + ties > 17) return undefined
+  return { season, wins, losses, ties }
 }
-
-export function createInitialForm(season: number): ScenarioFormState {
-  return {
-    strategy: '',
-    targetPosition: '',
-    partnerTeam: '',
-    includeRecord: false,
-    recordSeason: String(season),
-    wins: '',
-    losses: '',
-    ties: '',
-    futureAssetNote: '',
-  }
+export function strategyMix(record: ManualRecord): { compete: number; balanced: number; rebuild: number } | null {
+  const games = record.wins + record.losses + (record.ties ?? 0)
+  if (!games) return null
+  const rate = (record.wins + (record.ties ?? 0) / 2) / games
+  if (rate < 0.25) return { compete: 10, balanced: 25, rebuild: 65 }
+  if (rate < 0.5) return { compete: 20, balanced: 45, rebuild: 35 }
+  if (rate < 0.7) return { compete: 40, balanced: 45, rebuild: 15 }
+  return { compete: 65, balanced: 25, rebuild: 10 }
 }
-
-/** Entero no negativo escrito por el usuario, o null si no es válido. */
-function parseCount(text: string): number | null {
-  return /^\d{1,3}$/.test(text.trim()) ? Number(text.trim()) : null
-}
-
 export function validateScenarioForm(form: ScenarioFormState, need: ScenarioNeed | null): string[] {
   const errors: string[] = []
-  if (!need) errors.push('Elige una necesidad: selecciona un hallazgo o un segmento del diagnóstico.')
-  if (form.strategy === '') errors.push('Elige una estrategia: competir ahora o reconstruir.')
-  if (form.futureAssetNote.length > NOTE_MAX_LENGTH) {
-    errors.push(`La descripción del activo futuro no puede pasar de ${NOTE_MAX_LENGTH} caracteres.`)
-  }
-  if (form.includeRecord) {
-    if (parseCount(form.recordSeason) === null) errors.push('La temporada del récord debe ser un número.')
-    if (parseCount(form.wins) === null) errors.push('Las victorias deben ser un entero igual o mayor que 0.')
-    if (parseCount(form.losses) === null) errors.push('Las derrotas deben ser un entero igual o mayor que 0.')
-    if (form.ties.trim() !== '' && parseCount(form.ties) === null) {
-      errors.push('Los empates deben ser un entero igual o mayor que 0.')
-    }
-  }
+  if (!need) errors.push('Elige una necesidad detectada o un segmento desde el diagnóstico.')
+  if (!form.strategy) errors.push('Elige una estrategia.')
+  if (form.includeRecord && !buildRecord(form)) errors.push('Introduce una temporada válida y un récord de enteros no negativos con hasta 17 partidos.')
   return errors
 }
-
-function buildRecord(form: ScenarioFormState): ManualRecord | undefined {
-  if (!form.includeRecord) return undefined
-  const season = parseCount(form.recordSeason)
-  const wins = parseCount(form.wins)
-  const losses = parseCount(form.losses)
-  if (season === null || wins === null || losses === null) return undefined
-  const ties = parseCount(form.ties)
-  return ties === null ? { season, wins, losses } : { season, wins, losses, ties }
-}
-
-/** Convierte un formulario ya validado en la petición del contrato. */
-export function buildScenarioRequest(
-  team: string,
-  form: ScenarioFormState,
-  need: ScenarioNeed,
-): ScenarioRequest | null {
-  if (form.strategy === '') return null
-  const note = form.futureAssetNote.trim()
+export function buildScenarioRequest(team: string, form: ScenarioFormState, need: ScenarioNeed): ScenarioRequest | null {
+  if (!form.strategy) return null
   const manualRecord = buildRecord(form)
-  return {
-    team,
-    strategy: form.strategy,
-    need,
-    ...(form.targetPosition !== '' && { targetPosition: form.targetPosition }),
-    ...(form.partnerTeam !== '' && { partnerTeam: form.partnerTeam }),
-    ...(manualRecord !== undefined && { manualRecord }),
-    ...(form.strategy === 'rebuild' && note !== '' && { futureAssetNote: note }),
-  }
+  return { team, strategy: form.strategy, need, targetPosition: positionAdvice(form.focus || defaultFocus(need.perspective)).some((item) => item.position === form.targetPosition) ? form.targetPosition : positionAdvice(form.focus || defaultFocus(need.perspective))[0].position, ...(form.partnerTeam && { partnerTeam: form.partnerTeam }), ...(manualRecord && { manualRecord }) }
 }

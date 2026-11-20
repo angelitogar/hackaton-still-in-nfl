@@ -210,7 +210,6 @@ export function buildScenarioPreview(request: ScenarioRequest): ScenarioPreview 
     const { season, wins, losses, ties } = request.manualRecord
     assumptions.push(`Récord ${wins}-${losses}${ties ? `-${ties}` : ''} de la temporada ${season} (dato manual, no verificado; no influye en los cálculos).`)
   }
-  if (request.futureAssetNote) assumptions.push(`Activo futuro descrito por el usuario: «${request.futureAssetNote}» (dato manual, no verificado).`)
 
   return {
     evidence: needRow ? [needRow] : [],

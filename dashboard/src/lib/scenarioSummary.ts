@@ -28,7 +28,7 @@ export function buildScenarioSummary(request: ScenarioRequest, preview: Scenario
       'Perfiles históricos de equipos',
       preview.partnerProfiles.map(
         (profile) =>
-          `${profile.team} (${profile.source === 'manual' ? 'elegido a mano' : 'calculado'}) · ${describeSlice(profile.slice)}`,
+          `${profile.team} (${profile.source === 'manual' ? 'elegido a mano' : 'calculado'}) · ${profile.slice ? describeSlice(profile.slice) : 'sin muestra histórica suficiente'}${profile.simulation ? ` · simulación: busca ${profile.simulation.theirNeed}; ofrecer ${profile.simulation.offerPlayer ?? 'selección ficticia'}; recibir ${profile.simulation.receivePlayer ?? 'sin excedente'}. ${profile.simulation.draftProposal}` : ''}`,
       ),
     ),
     ...section('Supuestos del usuario', preview.assumptions),

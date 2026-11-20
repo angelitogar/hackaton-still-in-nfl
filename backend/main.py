@@ -23,12 +23,11 @@ class Record(BaseModel):
 
 class Scenario(BaseModel):
     team: str
-    strategy: Literal['compete', 'rebuild']
+    strategy: Literal['compete', 'balanced', 'rebuild']
     need: Need
     targetPosition: str | None = Field(default=None, max_length=40)
     partnerTeam: str | None = None
     manualRecord: Record | None = None
-    futureAssetNote: str | None = Field(default=None, max_length=280)
 
 def error(code, message, status=422):
     return JSONResponse(status_code=status, content={'error': {'code': code, 'message': message, 'details': {}}})

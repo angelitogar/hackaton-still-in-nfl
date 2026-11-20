@@ -47,6 +47,7 @@ export const PERSPECTIVE_LABELS: Record<Perspective, string> = {
 
 export const STRATEGY_LABELS: Record<Strategy, string> = {
   compete: 'Competir ahora',
+  balanced: 'Competir y construir',
   rebuild: 'Reconstruir',
 }
 

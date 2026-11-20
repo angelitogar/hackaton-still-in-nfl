@@ -1,5 +1,6 @@
 """Historical pass-play analysis. Original CSV files remain read-only."""
 from functools import lru_cache
+from hashlib import sha256
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -86,6 +87,7 @@ def slice_rows(team, perspective, dimension):
                      'percentile': percentile(mean, peers, perspective), 'sampleFlag': 'ok' if n >= 50 else 'low', 'verdict': verdict})
     return rows
 
+@lru_cache(maxsize=128)
 def diagnosis(team, perspective):
     _, _, plays = load()
     col = team_col(perspective)
@@ -105,26 +107,58 @@ def diagnosis(team, perspective):
             'attention': findings('adverse'), 'strengths': findings('favorable'), 'outcomeMix': mixes,
             'caveats': LIMITS + ['Intervalos aproximados y comparaciones múltiples: no son pruebas causales ni inferencias confirmatorias.', 'La zona de campo se calcula a partir de yardlineSide, yardlineNumber y possessionTeam.']}
 
+SIM_POSITIONS = ('QB', 'RB', 'WR', 'TE', 'OL', 'CB', 'DE', 'LB')
+
+def fictional_roster(team):
+    """Reproducible simulated roster; no identity or real membership implied."""
+    roster = {}
+    for position in SIM_POSITIONS:
+        digest = sha256(f'{team}:{position}'.encode()).digest()
+        count = 1 + digest[0] % 3
+        roster[position] = [f'Player {int.from_bytes(digest[1:5], "big") % 90000 + 10000}-{i+1}' for i in range(count)]
+    return roster
+
 def scenario(request):
     team, need = request['team'], request['need']
     matches = [r for r in slice_rows(team, need['perspective'], need['dimension']) if r['bucket'] == need['bucket'] and r['sampleFlag'] == 'ok']
     if not matches:
         return None
-    # Candidate teams are historical comparisons only, not plausible trade partners.
     partners = []
     selected = request.get('partnerTeam')
+    our_roster = fictional_roster(team)
+    target = request.get('targetPosition') or 'WR'
+    if target not in SIM_POSITIONS:
+        target = 'WR'
     for candidate in ([selected] if selected else meta()['teams']):
         if candidate == team:
             continue
-        row = next((r for r in slice_rows(candidate, need['perspective'], need['dimension']) if r['bucket'] == need['bucket'] and r['sampleFlag'] == 'ok'), None)
-        if row and (selected or row['verdict'] == 'favorable'):
-            partners.append({'team': candidate, 'slice': row, 'source': 'manual' if selected else 'computed', 'note': 'Comparación histórica, no implica disponibilidad, interés ni compatibilidad para un trade.'})
-    partners.sort(key=lambda p: p['slice']['percentile'], reverse=True)
-    assumptions = [f"Estrategia: {request['strategy']} (selección manual, no verificada)."]
-    for key, title in [('targetPosition', 'Posición objetivo'), ('partnerTeam', 'Equipo elegido'), ('futureAssetNote', 'Activo futuro')]:
-        if request.get(key): assumptions.append(f'{title}: {request[key]} (dato manual, no verificado).')
+        row = next((r for r in slice_rows(candidate, need['perspective'], need['dimension']) if r['bucket'] == need['bucket']), None)
+        their_roster = fictional_roster(candidate)
+        # Fictional weakness: fewest synthetic players, never a real roster assertion.
+        their_need = min(SIM_POSITIONS, key=lambda pos: (len(their_roster[pos]), pos))
+        offer_count = len(our_roster[their_need])
+        target_count = len(their_roster[target])
+        weaknesses = len(diagnosis(candidate, need['perspective'])['attention'])
+        score = round((weaknesses / 3) * 35 + (35 if offer_count > 1 else 0) + (20 if target_count > 1 else 0) + (10 if row and row['verdict'] == 'adverse' else 0))
+        offer = our_roster[their_need][0] if offer_count > 1 else None
+        receiving = their_roster[target][0] if target_count > 1 else None
+        partners.append({'team': candidate, 'slice': row, 'source': 'manual' if selected else 'computed',
+                         'note': 'Plantillas y necesidades por posición simuladas; la comparación de jugadas es histórica. No implica disponibilidad ni aceptación.',
+                         'simulation': {'theirNeed': their_need, 'ourCount': offer_count, 'theirTargetCount': target_count,
+                                        'targetPosition': target, 'offerPlayer': offer, 'receivePlayer': receiving, 'weaknessCount': weaknesses,
+                                        'draftProposal': (('Explorar ofrecer un jugador ficticio y solicitar una selección futura de primera ronda.' if offer else 'Sin excedente simulado para ofrecer: define otro activo antes de pedir una selección.') if request['strategy'] == 'rebuild' else ('Explorar ofrecer una selección futura de primera ronda a cambio del jugador ficticio.' if receiving else 'Sin excedente simulado en la posición buscada: elige otro socio.') if request['strategy'] == 'compete' else 'Explorar jugadores ficticios y una selección futura como parte de una negociación simulada.'),
+                                        'draftPicks': 'Cada equipo tiene ficticiamente una selección por ronda.',
+                                        'fitScore': score}})
+    partners.sort(key=lambda p: (-p['simulation']['fitScore'], p['team']))
+    for i, partner in enumerate(partners):
+        partner['simulation']['rank'] = i + 1
+    assumptions = [f"Estrategia: {request['strategy']} (selección manual).",
+                   'Plantillas, jugadores y necesidades por posición son ficticios; cada equipo tiene una selección por ronda.',
+                   'La posición simulada no se deduce de las jugadas históricas.']
+    for key, title in [('targetPosition', 'Posición objetivo'), ('partnerTeam', 'Equipo elegido')]:
+        if request.get(key): assumptions.append(f'{title}: {request[key]} (dato manual).')
     if request.get('manualRecord'):
         rec = request['manualRecord']
-        assumptions.append(f"Récord {rec['wins']}-{rec['losses']}-{rec.get('ties', 0)} de {rec['season']} (dato manual, no verificado).")
-    return {'evidence': matches, 'partnerProfiles': partners[:3], 'assumptions': assumptions, 'missingData': LIMITS,
-            'disclaimers': ['Escenario hipotético, no una recomendación de trade.', 'No se afirma disponibilidad, valor, viabilidad ni aceptación.']}
+        assumptions.append(f"Récord {rec['wins']}-{rec['losses']}-{rec.get('ties', 0)} de {rec['season']} (dato manual no verificado).")
+    return {'evidence': matches, 'partnerProfiles': partners, 'assumptions': assumptions, 'missingData': LIMITS,
+            'disclaimers': ['Escenario hipotético con jugadores ficticios: no es una recomendación de trade.', 'No se afirma disponibilidad, valor, viabilidad ni aceptación.']}

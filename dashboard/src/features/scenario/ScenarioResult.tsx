@@ -40,24 +40,28 @@ export function ScenarioResult({ request, preview, season }: ScenarioResultProps
 
       <Panel
         title="Perfiles históricos de equipos"
-        subtitle="Describen tendencias de 2021. No indican interés, necesidad real ni disponibilidad."
+        subtitle="Combinan tendencias históricas con plantillas y necesidades ficticias. No indican interés ni disponibilidad real."
       >
         {preview.partnerProfiles.length === 0 ? (
           <EmptyState message="No hay equipos con evidencia suficiente. Puedes elegir un socio a mano en el formulario." />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
+            <p className="mb-3 text-xs text-zinc-400">Índice orientativo: hasta 35 puntos por tendencias adversas históricas, 35 por tu excedente ficticio, 20 por su excedente ficticio y 10 por una tendencia adversa en el mismo segmento. No es probabilidad de aceptación.</p>
             {preview.partnerProfiles.map((profile) => (
               <article key={profile.team} className="rounded-md border border-zinc-800 bg-zinc-950/60 p-3">
                 <header className="mb-2 flex flex-wrap items-center gap-2">
-                  <h3 className="text-sm font-semibold text-zinc-100">{profile.team}</h3>
-                  <Badge tone={profile.source === 'manual' ? 'warn' : 'info'}>
-                    {profile.source === 'manual' ? 'Elegido a mano' : 'Calculado'}
-                  </Badge>
-                  <VerdictBadge verdict={profile.slice.verdict} />
-                  <SampleBadge flag={profile.slice.sampleFlag} />
+                  <h3 className="text-sm font-semibold text-zinc-100">#{profile.simulation?.rank} · {profile.team}</h3>
+                  {profile.simulation && <Badge tone="info">{profile.simulation.fitScore}% de encaje simulado</Badge>}
                 </header>
-                <SliceFigures slice={profile.slice} />
-                <p className="mt-2 text-xs text-zinc-400">{profile.note}</p>
+                {profile.simulation && <div className="space-y-1 text-xs text-zinc-300">
+                  <p>{profile.simulation.weaknessCount} áreas de atención históricas · Necesidad ficticia: {profile.simulation.theirNeed}.</p>
+                  <p>Ofrecer: {profile.simulation.offerPlayer ?? 'una selección ficticia'} · Buscar {profile.simulation.targetPosition}: {profile.simulation.receivePlayer ?? 'sin excedente simulado'}.</p>
+                  <p>{profile.simulation.draftProposal}</p>
+                </div>}
+                <details className="mt-2 text-xs text-zinc-400"><summary className="cursor-pointer">Ver evidencia histórica y límites</summary>
+                  <div className="mt-2">{profile.slice ? <><VerdictBadge verdict={profile.slice.verdict} /> <SampleBadge flag={profile.slice.sampleFlag} /><SliceFigures slice={profile.slice} /></> : <p>Sin muestra suficiente del segmento histórico.</p>}</div>
+                  <p className="mt-2">{profile.note} {profile.simulation?.draftPicks}</p>
+                </details>
               </article>
             ))}
           </div>

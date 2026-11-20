@@ -37,7 +37,7 @@ export function Dashboard({ meta }: { meta: Meta }) {
       <MockBanner />
       <AppHeader meta={meta} />
       <div className="mx-auto grid max-w-[1400px] gap-6 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <main className="space-y-4">
+        <main className="min-w-0 space-y-4">
           <TeamControls
             teams={meta.teams}
             team={team}
@@ -61,7 +61,7 @@ export function Dashboard({ meta }: { meta: Meta }) {
             <ScenarioLab
               key={`${team}-${perspective}`}
               meta={meta}
-              diagnosis={state.status === 'success' ? state.data : null}
+              diagnosis={state.status === 'success' && state.data.team === team && state.data.perspective === perspective ? state.data : null}
               need={need}
               onNeedChange={setNeed}
             />
