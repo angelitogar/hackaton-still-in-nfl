@@ -34,8 +34,8 @@ export function SliceChart({ rows, teamLabel }: { rows: SliceMetric[]; teamLabel
             cursor={{ fill: '#27272a' }}
           />
           <Legend wrapperStyle={{ fontSize: 12 }} />
-          <Bar dataKey="team" name={teamLabel} fill="#34d399" radius={[3, 3, 0, 0]} />
-          <Bar dataKey="league" name="Mediana de la liga" fill="#52525b" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="team" name={teamLabel} fill="#d50a0a" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="league" name="Mediana de la liga" fill="#4479b5" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

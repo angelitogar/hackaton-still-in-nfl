@@ -11,3 +11,56 @@
     @apply bg-zinc-950 font-sans text-zinc-100 antialiased;
   }
 }
+
+/* NFL-inspired palette; the class overrides adapt the existing dark dashboard to light mode. */
+.brand-header { border-bottom: 3px solid #d50a0a; }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="light"] body { background: #f3f6fa; color: #152c48; }
+[data-theme="light"] .bg-zinc-950,
+[data-theme="light"] .bg-zinc-900,
+[data-theme="light"] [class~="bg-zinc-950/60"],
+[data-theme="light"] [class~="bg-zinc-950/50"],
+[data-theme="light"] [class~="bg-zinc-900/60"],
+[data-theme="light"] [class~="bg-zinc-900/40"] { background-color: #fff; }
+[data-theme="light"] .bg-zinc-800 { background-color: #e5edf7; }
+[data-theme="light"] .text-zinc-100,
+[data-theme="light"] .text-zinc-200,
+[data-theme="light"] .text-zinc-300 { color: #102c4b; }
+[data-theme="light"] .text-zinc-400,
+[data-theme="light"] .text-zinc-500 { color: #52647b; }
+[data-theme="light"] .border-zinc-600,
+[data-theme="light"] .border-zinc-700,
+[data-theme="light"] .border-zinc-800,
+[data-theme="light"] [class~="border-zinc-800/60"] { border-color: #c8d3e0; }
+[data-theme="light"] .text-emerald-200,
+[data-theme="light"] .text-emerald-300,
+[data-theme="light"] .text-emerald-400 { color: #003369; }
+[data-theme="light"] [class~="bg-emerald-900/30"],
+[data-theme="light"] [class~="bg-emerald-900/40"],
+[data-theme="light"] [class~="bg-emerald-950/30"] { background-color: #e5effc; }
+[data-theme="light"] .text-rose-100,
+[data-theme="light"] .text-rose-200,
+[data-theme="light"] .text-rose-300 { color: #9a1925; }
+[data-theme="light"] .text-amber-100,
+[data-theme="light"] .text-amber-200,
+[data-theme="light"] .text-amber-300 { color: #7b4e00; }
+[data-theme="light"] [class~="bg-rose-950/40"],
+[data-theme="light"] [class~="bg-rose-900/40"],
+[data-theme="light"] [class~="bg-rose-900/60"] { background-color: #fff0f0; }
+[data-theme="light"] [class~="bg-amber-950/20"],
+[data-theme="light"] [class~="bg-amber-950/40"],
+[data-theme="light"] [class~="bg-amber-900/30"] { background-color: #fff6df; }
+[data-theme="light"] .text-sky-300 { color: #1559a0; }
+[data-theme="light"] [class~="bg-sky-900/30"] { background-color: #e9f3ff; }
+[data-theme="light"] .brand-header { background: #fff; }
+[data-theme="light"] .theme-button { background: #f3f6fa; }
+.brand-header { border-bottom-color: #d50a0a !important; }
+.bg-emerald-600.text-zinc-950 { color: #fff; }
+[data-theme="dark"] body,
+[data-theme="dark"] .bg-zinc-950 { background-color: #071729; }
+[data-theme="dark"] .bg-zinc-900,
+[data-theme="dark"] [class~="bg-zinc-900/40"],
+[data-theme="dark"] [class~="bg-zinc-900/60"],
+[data-theme="dark"] [class~="bg-zinc-950/50"],
+[data-theme="dark"] [class~="bg-zinc-950/60"] { background-color: #10263e; }
+[data-theme="dark"] .text-zinc-500 { color: #9bacc0; }
